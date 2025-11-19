@@ -1,43 +1,37 @@
-"use client";
+
+
+"use client"; // Ensure this is a client component
 
 import { useEffect } from "react";
+import Script from "next/script";
 
+// Extend the Window interface to include gtranslateSettings
 declare global {
   interface Window {
-    googleTranslateElementInit?: () => void;
-    google?: any;
+    gtranslateSettings?: {
+      default_language: string;
+      languages: string[];
+      wrapper_selector: string;
+    };
   }
 }
 
-export default function GoogleTranslate() {
+export default function GTranslate() {
   useEffect(() => {
-    // Initialize Google Translate after script loads
-    window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "en",
-          includedLanguages: "en,bn,ar,zh-CN,hi,es,ja",
-          autoDisplay: false,
-        },
-        "google_translate_element"
-      );
+    window.gtranslateSettings = {
+      default_language: "en",
+      languages: ["en", "sv","bn"],
+      wrapper_selector: ".gtranslate_wrapper",
     };
-
-    // Load Google Translate script
-    const script = document.createElement("script");
-    script.src =
-      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-    script.async = true;
-    document.body.appendChild(script);
   }, []);
 
   return (
-    <div>
-      {/* Hidden Google container */}
-      <div
-        className="absolute bottom-20 left-20"
-        id="google_translate_element"
-      ></div>
-    </div>
+    <>
+      <div className="gtranslate_wrapper"></div>
+      <Script
+        src="https://cdn.gtranslate.net/widgets/latest/float.js"
+        strategy="lazyOnload"
+      />
+    </>
   );
 }
